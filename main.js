@@ -31,7 +31,7 @@ function ensureDirectories() {
 // ========== تهيئة قاعدة البيانات ==========
 function initializeDatabase() {
     try {
-        db = new Database(dbPath);
+        db = new Database(dbPath, { verbose: console.log });
         db.pragma('foreign_keys = ON');
 
         // إنشاء جميع الجداول
@@ -239,7 +239,7 @@ function initializeDatabase() {
         if (row.count === 0) {
             const companyId = 1;
             db.prepare("INSERT INTO companies (id, name, phone, address, tax_rate) VALUES (?, ?, ?, ?, ?)")
-                .run(companyId, 'مطعم تقنيات سوفت', '773579486', 'اليمن - صنعاء', 0);
+                .run(companyId, 'كيان الشواية البخاري', '773579486', 'اليمن - صنعاء', 0);
 
             const hash = bcrypt.hashSync('77357233199477', 10);
             db.prepare("INSERT INTO users (id, company_id, full_name, username, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)")
@@ -288,8 +288,11 @@ function createWindow() {
             contextIsolation: false
         }
     });
+    
     mainWindow.loadFile('index.html');
-    // mainWindow.webContents.openDevTools(); // لتصحيح الأخطاء
+    
+    // تفعيل أدوات المطور لاكتشاف أي أخطاء مخفية في نسخة الإنتاج
+    mainWindow.webContents.openDevTools(); 
 }
 
 app.whenReady().then(() => {
@@ -306,11 +309,22 @@ app.whenReady().then(() => {
         return;
     }
     createWindow();
+    
+    app.on('activate', function () {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
 });
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        if (db) db.close();
+        if (db) {
+            try {
+                db.close();
+                console.log('تم إغلاق اتصال قاعدة البيانات بأمان.');
+            } catch (err) {
+                console.error('خطأ أثناء إغلاق قاعدة البيانات:', err);
+            }
+        }
         app.quit();
     }
 });
