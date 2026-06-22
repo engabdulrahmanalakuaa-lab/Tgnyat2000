@@ -19,14 +19,8 @@ jobs:
         with:
           node-version: 20
 
-      - name: تثبيت الاعتماديات
+      - name: تثبيت الاعتماديات وبناء قاعدة البيانات
         run: npm install
-
-      - name: إعادة بناء better-sqlite3 لـ Electron
-        run: |
-          npx electron-rebuild -f -w better-sqlite3
-        env:
-          npm_config_msvs_version: 2022
 
       - name: بناء ملف التثبيت EXE
         run: npm run dist
