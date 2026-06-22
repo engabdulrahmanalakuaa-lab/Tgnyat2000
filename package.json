@@ -10,8 +10,8 @@
     "rebuild": "electron-rebuild -f -w better-sqlite3"
   },
   "dependencies": {
-    "better-sqlite3": "^11.0.0",
     "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.0.0",
     "node-thermal-printer": "^4.4.0",
     "pdfmake": "^0.2.7"
   },
@@ -23,6 +23,9 @@
   "build": {
     "appId": "com.technologies-soft.pos",
     "productName": "تقنيات سوفت - مطعم",
+    "asarUnpack": [
+      "**/*.node"
+    ],
     "win": {
       "target": "nsis",
       "requestedExecutionLevel": "requireAdministrator"
